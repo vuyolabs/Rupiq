@@ -1,0 +1,174 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id     Int     @id @default(autoincrement())
+  // Supabase Auth user id (auth.users.id)
+  authId String? @unique @db.Uuid
+  email  String  @unique
+  name   String
+
+  accounts     Account[]
+  transactions Transaction[]
+  budgets      Budget[]
+  goals        FinancialGoal[]
+  aiMessages   AiMessage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id            Int         @id @default(autoincrement())
+  name          String
+  type          AccountType
+  balance       Decimal     @db.Decimal(14, 2)
+  accountNumber String?
+  ifsc          String?
+  branch        String?
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  transactions Transaction[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+enum AccountType {
+  BANK
+  CASH
+  CREDIT_CARD
+  WALLET
+  OTHER
+}
+
+enum TransactionType {
+  CREDIT
+  DEBIT
+}
+
+enum TransactionCategory {
+  SALARY
+  INCENTIVE_BONUS
+  FREELANCE
+  OTHER_INCOME
+
+  FOOD
+  SNACKS_TEA
+  PERSONAL_HABITS
+  GROCERIES
+  ONLINE_SHOPPING
+  SHOPPING
+  MOBILE_RECHARGE
+  STREAMING_OTT
+  SUBSCRIPTION
+  TRANSPORTATION
+  ENTERTAINMENT
+  HEALTHCARE
+  UTILITIES
+  ELECTRICITY_BILL
+  HOUSING
+  EDUCATION
+  TRAVEL
+  INSURANCE
+  EMI
+  INVESTMENT
+
+  OTHER
+}
+
+model Transaction {
+  id Int @id @default(autoincrement())
+
+  amount Decimal @db.Decimal(14, 2)
+
+  type     TransactionType
+  category TransactionCategory
+
+  merchant    String?
+  description String?
+  emoji       String?
+
+  occurredAt DateTime
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  account   Account @relation(fields: [accountId], references: [id])
+  accountId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, occurredAt])
+  @@index([userId, category])
+  @@index([userId, type])
+  @@index([accountId, occurredAt])
+}
+
+model Budget {
+  id Int @id @default(autoincrement())
+
+  name     String?
+  category TransactionCategory
+
+  amount Decimal @db.Decimal(14, 2)
+
+  month Int
+  year  Int
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, category, month, year])
+  @@index([userId, year, month])
+}
+
+model FinancialGoal {
+  id Int @id @default(autoincrement())
+
+  name String
+
+  targetAmount  Decimal @db.Decimal(14, 2)
+  currentAmount Decimal @db.Decimal(14, 2)
+
+  targetDate DateTime?
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model AiMessage {
+  // AI SDK UIMessage id
+  id        String   @id
+  role      String   // 'user' or 'assistant'
+  // Plain-text content of the message
+  content   String   @db.Text
+  // Full UIMessage parts (text + tool calls) so history re-renders exactly
+  parts     Json?
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
