@@ -26,7 +26,6 @@ Built with **Next.js 16**, **React 19**, **Prisma 7 + PostgreSQL**, **Supabase A
 
   Chat history is saved per user in PostgreSQL and loaded on the server, so the client can't tamper with it. History can be cleared from the drawer.
 - **Authentication** — email/password sign-up and login, plus password reset, all through Supabase Auth with SSR cookie sessions.
-- **PWA** — installable, with a web manifest, service worker and install prompt.
 - **Theming** — light, dark and system themes via `next-themes`.
 
 ---
@@ -53,7 +52,6 @@ prisma/
   schema.prisma        # User, Account, Transaction, Budget, FinancialGoal, AiMessage
   migrations/          # SQL migrations
   seed.ts              # Sample data generator
-public/sw.js           # Service worker
 src/
   actions/             # Server Actions (accounts, transactions, budgets, goals, reports, auth, settings, AI history)
   app/

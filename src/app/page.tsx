@@ -15,7 +15,6 @@ import {
   Sparkles,
   Target,
   Wallet,
-  Smartphone,
   Send,
 } from "lucide-react";
 import { AppLogo } from "@/components/shared/app-logo";
@@ -515,7 +514,7 @@ export default function Home() {
                 {...inView}
                 custom={2}
                 variants={fadeUp}
-                className="rounded-3xl border border-border/70 bg-card p-6 sm:p-8 md:col-span-2"
+                className="rounded-3xl border border-border/70 bg-card p-6 sm:p-8 md:col-span-3"
               >
                 <FeatureIcon icon={Target} />
                 <h3 className="mt-5 text-xl font-bold">Goals you can see moving</h3>
@@ -551,7 +550,7 @@ export default function Home() {
                 {...inView}
                 custom={3}
                 variants={fadeUp}
-                className="rounded-3xl border border-border/70 bg-card p-6 sm:p-8 md:col-span-2"
+                className="rounded-3xl border border-border/70 bg-card p-6 sm:p-8 md:col-span-3"
               >
                 <FeatureIcon icon={FileSpreadsheet} />
                 <h3 className="mt-5 text-xl font-bold">Reports in one click</h3>
@@ -570,19 +569,6 @@ export default function Home() {
                 </div>
               </motion.div>
 
-              {/* PWA */}
-              <motion.div
-                {...inView}
-                custom={4}
-                variants={fadeUp}
-                className="rounded-3xl border border-border/70 bg-card p-6 sm:p-8 md:col-span-2"
-              >
-                <FeatureIcon icon={Smartphone} />
-                <h3 className="mt-5 text-xl font-bold">Works like an app</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  Install Rupiq on your phone or desktop and log an expense the moment it happens.
-                </p>
-              </motion.div>
             </div>
           </div>
         </section>

@@ -9,8 +9,6 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
-import { RegisterServiceWorker } from "@/components/pwa/register-sw";
-import { PwaInstallPrompt } from "@/components/pwa/pwa-install-prompt";
 
 const playfairDisplayHeading = Playfair_Display({
   subsets: ["latin"],
@@ -44,11 +42,6 @@ export const metadata: Metadata = {
   title: "Rupiq — Manage Your Finances",
   description: "AI-Powered Personal Finance & Wealth Management",
   applicationName: "Rupiq",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "Rupiq",
-  },
   formatDetection: {
     telephone: false,
   },
@@ -91,8 +84,6 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
-          <RegisterServiceWorker />
-          <PwaInstallPrompt />
           <Toaster richColors position="bottom-right" />
         </ThemeProvider>
       </body>

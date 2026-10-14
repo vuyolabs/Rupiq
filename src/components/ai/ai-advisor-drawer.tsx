@@ -7,11 +7,11 @@ import { Streamdown } from "streamdown";
 import {
   AlertCircle,
   ArrowUp,
+  Bot,
   Check,
   Loader2,
   PieChart,
   RotateCcw,
-  Sparkles,
   Square,
   Target,
   Trash2,
@@ -19,7 +19,6 @@ import {
   Wallet,
   X,
 } from "lucide-react";
-import { AppLogoIcon } from "@/components/shared/app-logo";
 import { Button } from "@/components/ui/button";
 import {
   MessageScroller,
@@ -59,6 +58,28 @@ const transport = new DefaultChatTransport<AdvisorUIMessage>({
     body: { message: messages[messages.length - 1] },
   }),
 });
+
+const AVATAR_SIZES = {
+  sm: { box: "h-7 w-7 rounded-full", icon: "h-4 w-4" },
+  md: { box: "h-8 w-8 rounded-xl", icon: "h-[18px] w-[18px]" },
+  lg: { box: "h-14 w-14 rounded-2xl", icon: "h-7 w-7" },
+};
+
+function AdvisorAvatar({ size = "sm", className }: { size?: keyof typeof AVATAR_SIZES; className?: string }) {
+  const s = AVATAR_SIZES[size];
+  return (
+    <div
+      aria-hidden
+      className={cn(
+        "flex shrink-0 items-center justify-center bg-primary text-primary-foreground shadow-sm shadow-primary/25",
+        s.box,
+        className,
+      )}
+    >
+      <Bot className={s.icon} strokeWidth={2} />
+    </div>
+  );
+}
 
 function ToolStatus({ part }: { part: AdvisorUIMessage["parts"][number] }) {
   if (!isToolUIPart(part)) return null;
@@ -102,9 +123,7 @@ function AssistantMessage({
 
   return (
     <div className="flex gap-3">
-      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary ring-1 ring-primary/20">
-        <Sparkles className="h-3.5 w-3.5" />
-      </div>
+      <AdvisorAvatar className="mt-0.5" />
       <div className="min-w-0 flex-1 space-y-2.5">
         {toolParts.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
@@ -146,9 +165,7 @@ function ThinkingDots() {
 function EmptyState({ onPick }: { onPick: (prompt: string) => void }) {
   return (
     <div className="flex flex-col items-center px-2 pt-6 pb-2 text-center">
-      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-primary/15 to-primary/5 ring-1 ring-primary/15">
-        <Sparkles className="h-6 w-6 text-primary" />
-      </div>
+      <AdvisorAvatar size="lg" className="mb-4" />
       <h3 className="font-heading text-base font-semibold tracking-tight">
         Ask about your money
       </h3>
@@ -256,7 +273,7 @@ export function AiAdvisorDrawer() {
           isOpen && "max-sm:hidden",
         )}
       >
-        {isOpen ? <X className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
+        {isOpen ? <X className="h-4 w-4" /> : <Bot className="h-[18px] w-[18px]" />}
         <span>{isOpen ? "Close" : "Ask Rupiq"}</span>
       </button>
 
@@ -269,9 +286,7 @@ export function AiAdvisorDrawer() {
           {/* Header */}
           <header className="flex shrink-0 items-center justify-between gap-3 border-b border-border px-4 py-3">
             <div className="flex min-w-0 items-center gap-2.5">
-              <div className="h-8 w-8 shrink-0">
-                <AppLogoIcon />
-              </div>
+              <AdvisorAvatar size="md" />
               <div className="min-w-0 leading-tight">
                 <p className="font-heading text-sm font-semibold tracking-tight">
                   Rupiq AI
@@ -347,9 +362,7 @@ export function AiAdvisorDrawer() {
                   {status === "submitted" && lastMessage?.role === "user" && (
                     <MessageScrollerItem>
                       <div className="flex gap-3">
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary ring-1 ring-primary/20">
-                          <Sparkles className="h-3.5 w-3.5" />
-                        </div>
+                        <AdvisorAvatar />
                         <ThinkingDots />
                       </div>
                     </MessageScrollerItem>
