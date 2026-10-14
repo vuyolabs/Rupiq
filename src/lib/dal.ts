@@ -41,7 +41,7 @@ export const getCurrentUser = cache(async (): Promise<AppUser | null> => {
         (typeof meta.name === "string" && meta.name) ||
         email.split("@")[0];
 
-    // Supabase only issues a session for a verified email (or OAuth identity),
+    // Supabase only issues a session for a verified email,
     // so linking an existing row with the same email is safe.
     return prisma.user.upsert({
         where: { email },

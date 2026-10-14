@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-// Handles the PKCE redirect for email confirmation, Google OAuth and password recovery
+// Handles the PKCE redirect for email confirmation and password recovery
 export async function GET(req: NextRequest) {
   const { searchParams, origin } = req.nextUrl;
   const code = searchParams.get("code");

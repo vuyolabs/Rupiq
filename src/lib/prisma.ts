@@ -7,6 +7,22 @@ const globalForPrisma = globalThis as unknown as {
     pool: Pool | undefined;
 };
 
+// Supabase's session-mode pooler (port 5432) pins one server connection per client and caps
+// them at pool_size, so a few serverless instances each holding several connections exhaust it
+// (EMAXCONNSESSION). Transaction mode (port 6543) only borrows a server connection per query.
+function toTransactionPooler(url: string): string {
+    try {
+        const parsed = new URL(url);
+        if (parsed.hostname.endsWith(".pooler.supabase.com") && parsed.port === "5432") {
+            parsed.port = "6543";
+            return parsed.toString();
+        }
+    } catch {
+        // Not a parseable URL; let pg report it
+    }
+    return url;
+}
+
 function getPool(): Pool {
     if (!globalForPrisma.pool) {
         let url = process.env.DATABASE_URL;
@@ -14,7 +30,9 @@ function getPool(): Pool {
             throw new Error("DATABASE_URL is not set");
         }
 
-        // Add connect_timeout and keepalives if not already present
+        url = toTransactionPooler(url);
+
+        // Add connect_timeout if not already present
         if (!url.includes("connect_timeout")) {
             const separator = url.includes("?") ? "&" : "?";
             url = `${url}${separator}connect_timeout=15`;
@@ -29,8 +47,10 @@ function getPool(): Pool {
             connectionString: url,
             ssl: sslConfig,
             connectionTimeoutMillis: 15000,
-            idleTimeoutMillis: 30000, // 30s idle release to refresh cold serverless connections
-            max: 10,
+            // Release idle connections quickly so frozen serverless instances don't hoard them
+            idleTimeoutMillis: 10000,
+            // Each serverless instance gets its own pool; keep it small so many instances fit
+            max: Number(process.env.DATABASE_POOL_MAX) || (process.env.NODE_ENV === "production" ? 3 : 5),
             keepAlive: true,
             keepAliveInitialDelayMillis: 10000,
         });
